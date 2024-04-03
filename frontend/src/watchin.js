@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback, useRef} from 'react';
 import axios from 'axios';
-import { Form, FloatingLabel, Button } from 'react-bootstrap';
-import CustomWebcam from './webcam';
+import Webcam from "react-webcam";
+
 
 const Watchin = () => {
   // State for form inputs
@@ -12,7 +12,45 @@ const Watchin = () => {
   const [staff, setStaff] = useState('');
   const [reason, setReason] = useState('');
   const [staffList, setStaffList] = useState([]);
-  const [picture, setPicture] = useState(null);
+  const [imgSrc, setImgSrc] = useState(null);
+
+  const CustomWebcam =()=>{
+    const webcamRef = useRef(null);
+    
+
+    const retake = () => {
+        setImgSrc(null);
+      };
+
+    //dk function to capture 
+    const capture = useCallback(() => {
+        
+        const imageSrc = webcamRef.current.getScreenshot();
+        setImgSrc(imageSrc);
+      }, [webcamRef]);
+
+
+
+    return (
+        
+      <div>
+        <div className="container d-flex justify-content-center">
+      {imgSrc ? (
+        <img src={imgSrc} alt="webcam" />
+      ) : (
+        <Webcam height={300} width={300} ref={webcamRef} screenshotFormat="image/jpeg"
+        screenshotQuality={0.8}/>
+      )}</div>
+      <div className="btn-container">
+        {imgSrc ? (<button className="p-2 m-2" onClick={retake}>Retake photo</button>):
+
+<button onClick={capture}>Capture photo</button>
+        }
+      </div>
+      </div>
+    
+    );
+  };
 
   // Fetch staff names based on department
   useEffect(() => {
@@ -30,11 +68,11 @@ const Watchin = () => {
     fetchStaff();
   }, [department]);
 
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send form data to server along with the picture
+      
+      console.log(imgSrc.length);
       const formData = new FormData();
       formData.append('name', name);
       formData.append('phone', phone);
@@ -42,8 +80,7 @@ const Watchin = () => {
       formData.append('department', department);
       formData.append('staff', staff);
       formData.append('reason', reason);
-      formData.append('picture', picture);
-      console.log(formData.data);
+      formData.append('picture', imgSrc);
 
       const response = await axios.post('http://localhost:8000/approval', formData, {
         headers: {
@@ -59,11 +96,45 @@ const Watchin = () => {
       setDepartment('');
       setStaff('');
       setReason('');
-      setPicture(null);
+      setImgSrc(null);
     } catch (error) {
       console.error('Error submitting form:', error);
     }
   };
+  // Function to handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     // Send form data to server along with the picture
+  //     const formData = new FormData();
+  //     formData.append('name', name);
+  //     formData.append('phone', phone);
+  //     formData.append('headcount', headcount);
+  //     formData.append('department', department);
+  //     formData.append('staff', staff);
+  //     formData.append('reason', reason);
+  //     formData.append('picture', picture);
+  //     console.log(formData.data);
+
+  //     const response = await axios.post('http://localhost:8000/approval', formData, {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     console.log('Form submitted successfully:', response.data);
+      
+  //     // Clear form inputs after successful submission
+  //     setName('');
+  //     setPhone('');
+  //     setHeadcount('');
+  //     setDepartment('');
+  //     setStaff('');
+  //     setReason('');
+  //     setPicture(null);
+  //   } catch (error) {
+  //     console.error('Error submitting form:', error);
+  //   }
+  // };
 
   return (
     <><CustomWebcam> </CustomWebcam><div className="container">
