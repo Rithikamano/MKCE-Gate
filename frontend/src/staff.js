@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 import { BsCircleFill } from 'react-icons/bs';
+import axios from 'axios';
 
 const Staff = () => {
+
+  let staffName = "Murugesan";
+  const [nameList, setName] = useState([]);
+  const [pictureList, setPic] = useState([]);
+  const [headcountList, setHeadcount] = useState([]);
+  const [reasonList, setReason] = useState([]);
+
   const [showTable1, setShowTable1] = useState(false);
   const [showTable2, setShowTable2] = useState(false);
   const [showTable3, setShowTable3] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
 
   const toggleTable1 = () => {
     setShowTable1(true);
@@ -49,6 +58,28 @@ const Staff = () => {
     outline: 'none',
   };
 
+  // Fetch page data names based on department
+  useEffect(() => {
+    let staffName = "Murugesan";
+    const fetchPageData = async () => {
+      try {
+        console.log("fetching data");
+        const response = await axios.post('http://localhost:8000/admin', { staffName });
+        
+        setName(response.data.visitorNames);
+        setHeadcount(response.data.headcnts);
+        setPic(response.data.visitorPics);
+        setReason(response.data.visitorReasons);
+        
+        // console.log(resconsole.log(nameList);ponse.data);
+      } catch (error) {
+        console.error('Error fetching staff:', error);
+      }
+    };
+
+    fetchPageData();
+  }, [staffName]);
+
   return (
     <div className="container mt-4">
       <h2>My Visitors</h2>
@@ -56,13 +87,18 @@ const Staff = () => {
       <Table striped hover>
         <tbody>
           {/* Rows of visitors */}
+          {nameList.map((name, index) => (
           <tr>
-            <td><BsCircleFill size={40} color="green" /></td>
-            <td><b>Raja</b> along with <b>2</b> members is waiting to see you for <b>paperwork</b>. Have you meet them?</td>
-            <td>
-            <Button style={yeahButtonStyle} variant="primary">Yeah </Button>
-            </td>
-          </tr> <tr>
+          
+          <td> <img src={pictureList[index]} alt="profile" style={{width: 40, height: 40, borderRadius: "50%" }} /> </td>
+          <td><b>{name}</b> along with <b>{headcountList[index]}</b> members is waiting to see you for <b>{reasonList[index]}</b>. Have you meet them?</td>
+          <td>
+          <Button style={yeahButtonStyle} variant="primary">Yeah </Button>
+          </td>
+        </tr> 
+        ))}
+          
+          <tr>
             <td><BsCircleFill size={40} color="green" /></td>
             <td><b>Raja</b> along with <b>2</b> members is waiting to see you for <b>paperwork</b>. Have you meet them?</td>
             <td>

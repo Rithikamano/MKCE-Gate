@@ -56,10 +56,10 @@ const Watchin = () => {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        console.log("department in fetch", department);
+       
         const response = await axios.post('http://localhost:8000/staff', { department });
         setStaffList(response.data);
-        // console.log(response.data);
+        
       } catch (error) {
         console.error('Error fetching staff:', error);
       }
@@ -101,40 +101,7 @@ const Watchin = () => {
       console.error('Error submitting form:', error);
     }
   };
-  // Function to handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     // Send form data to server along with the picture
-  //     const formData = new FormData();
-  //     formData.append('name', name);
-  //     formData.append('phone', phone);
-  //     formData.append('headcount', headcount);
-  //     formData.append('department', department);
-  //     formData.append('staff', staff);
-  //     formData.append('reason', reason);
-  //     formData.append('picture', picture);
-  //     console.log(formData.data);
-
-  //     const response = await axios.post('http://localhost:8000/approval', formData, {
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-  //     console.log('Form submitted successfully:', response.data);
-      
-  //     // Clear form inputs after successful submission
-  //     setName('');
-  //     setPhone('');
-  //     setHeadcount('');
-  //     setDepartment('');
-  //     setStaff('');
-  //     setReason('');
-  //     setPicture(null);
-  //   } catch (error) {
-  //     console.error('Error submitting form:', error);
-  //   }
-  // };
+  
 
   return (
     <><CustomWebcam> </CustomWebcam><div className="container">
