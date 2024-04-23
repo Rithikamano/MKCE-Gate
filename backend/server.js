@@ -11,14 +11,13 @@ app.post("/approval", async (req, res) => {
   try {
     const { name, phone, headcount, department, staff, reason, picture } =
       req.body;
-    console.log(name);
-    console.log(department);
+
     // Get staffId from faculty table based on staff name
     const [facultyRow] = await db.query(
       "SELECT id FROM faculty WHERE name = ?",
       [staff]
     );
-    console.log(facultyRow);
+
     const staffId = facultyRow[0].id;
 
     // Get current time for inTime
@@ -49,7 +48,7 @@ app.post("/approval", async (req, res) => {
 
 app.post("/staff", async (req, res) => {
   const { department } = req.body; // Corrected variable name
-  console.log(department); // Logging the correct variable
+
   try {
     const query = "SELECT name FROM faculty WHERE dept = ?";
     const [rows] = await db.query(query, [department]);
@@ -82,6 +81,22 @@ app.post("/admin", async (req, res) => {
       id,
       exitApproval,
     });
+  } catch (error) {
+    console.error("Error fetching staff:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/tokenId", async (req, res) => {
+  const { tokenId } = req.body;
+
+  try {
+    const query =
+      "SELECT name,headcount,staffName,inTime,exitApproval FROM `approval` WHERE id =  ?";
+
+    const [data] = await db.query(query, [tokenId]);
+
+    res.json(data);
   } catch (error) {
     console.error("Error fetching staff:", error);
     res.status(500).json({ error: "Internal server error" });
